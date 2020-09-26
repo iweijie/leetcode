@@ -68,54 +68,27 @@
 //     cache[key3][key1][key2] = true;
 // };
 // [[-4,0,4],[-4,1,3],[-3,-1,4],[-3,0,3],[-3,1,2],[-2,-1,3],[-2,0,2],[-1,-1,2],[-1,0,1]]
-// var threeSum = function (nums) {
-//     nums.sort();
-//     const list = [];
-//     const len = nums.length;
-//     console.log(nums);
-//     console.log(len);
-//     for (let i = 0; i < len; i++) {
-//         if (nums[i - 1] !== undefined && nums[i - 1] === nums[i]) continue;
-//         if (len - i < 3) break;
-//         let j = i + 1;
-//         let n = len - 1;
-//         while (j < n) {
-//             console.log(i, j, n);
-//             const num = nums[i] + nums[j] + nums[n];
-//             if (num > 0) {
-//                 n--;
-//             } else if (num === 0) {
-//                 list.push([nums[i], nums[j++], nums[n--]]);
-//                 while (nums[j] === nums[j - 1]) j++;
-//             } else if (n + 1 < len) {
-//                 j++;
-//             }
-//         }
-//     }
-//     return list;
-// };
-
 var threeSum = function (nums) {
-    let n = nums.length;
-    nums.sort((a, b) => a - b);
-    let res = [];
-    for (let i = 0; i < n - 2; i++) {
-        if (nums[i] === nums[i - 1]) continue;
-        let left = i + 1;
-        let right = n - 1;
-        while (left < right) {
-            let sum = nums[i] + nums[left] + nums[right];
-            if (sum === 0) {
-                res.push([nums[i], nums[left++], nums[right--]]);
-                while (nums[left] === nums[left - 1]) left++;
-            } else if (sum < 0) {
-                left++;
-            } else {
-                right--;
-            }
-        }
+  nums.sort((a, b) => a - b);
+  const list = [];
+  const len = nums.length;
+  for (let i = 0; i < len - 2; i++) {
+    if (nums[i - 1] !== undefined && nums[i - 1] === nums[i]) continue;
+    let j = i + 1;
+    let n = len - 1;
+    while (j < n) {
+      const num = nums[i] + nums[j] + nums[n];
+      if (num === 0) {
+        list.push([nums[i], nums[j++], nums[n--]]);
+        while (nums[j] === nums[j - 1]) j++;
+      } else if (num < 0) {
+        j++;
+      } else {
+        n--;
+      }
     }
-    return res;
+  }
+  return list;
 };
 
 console.time("time");
