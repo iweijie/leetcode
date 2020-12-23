@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./00621. 任务调度器.js"></script>
+    <script>
+Promise.allSettled = function (arr) {
+  var args = Array.prototype.slice.call(arr);
+  debugger
+  return new Promise(function (resolve, reject) {
+    if (args.length === 0) return resolve([]);
+    var remaining = args.length;
+    function res(i, val) {
+      if (val && (typeof val === "object" || typeof val === "function")) {
+        if (
+          val instanceof Promise &&
+          val.then === Promise.prototype.then
+        ) {
+          while (val._state === 3) {
+            val = val._value;
+          }
+          // 如果 state === 1 ， 表示已通过，再次调用的目的在于传入值用于替换args[i]中的函数
+          if (val._state === 1)
+            return res(i, { status: "fulfilled", value: val._value });
+          // 如果 state === 2 , 当前 Promise 实例直接 reject
+          if (val._state === 2) {
+            // reject(val._value);
+            return res(i, { status: "rejected", reason: val._value });
+          }
+          val.then(
+            function (val) {
+              res(i, { status: "fulfilled", value: val });
+            },
+            function (err) {
+              res(i, { status: "rejected", reason: err });
+            }
+          );
+          return;
+        } else {
+          var then = val.then;
+          if (typeof then === "function") {
+            var p = new Promise(then.bind(val));
+            p.then(
+              function (val) {
+                res(i, { status: "fulfilled", value: val });
+              },
+              function (err) {
+                res(i, { status: "rejected", reason: err });
+              }
+            );
+            return;
+          }
+        }
+      }
+      // 简单值和 不含then 方法的复杂值 直接作为返回值
+      // 将返回值替换 args 中的值
+      args[i] = val;
+      // 执行到这相当于 一个值 转换已完成
+      if (--remaining === 0) {
+        //remaining === 0 表示所有值转换都已完成 调用 resolve
+        resolve(args);
+      }
+    }
+    //循环将 值放入 res 函数中作为参数
+    for (var i = 0; i < args.length; i++) {
+      res(i, args[i]);
+    }
+  });
+};
+    </script>
+
+    <script>
+      const promise1 = Promise.resolve({111: 1});
+      const promise2 = new Promise((resolve, reject) =>
+        setTimeout(reject, 1000, "foo")
+      );
+      const promises = [promise1, promise2];
+      //       :
+      // status: "fulfilled"
+      // value: 3
+      // __proto__: Object
+      // 1:
+      // reason: "foo"
+      // status: "rejected"
+      // __proto__: Object
+      Promise.allSettled(promises).then((results) => {
+        console.log(results);
+      });
+    </script>
+  </body>
+</html>
