@@ -25,22 +25,22 @@
  * @return {number}
  */
 var countConsistentStrings = function (allowed, words) {
-    const allowedObj = {};
-    allowed.split("").map((key) => {
-        allowedObj[key] = true;
-    });
+  const allowedObj = {};
+  allowed.split("").map((key) => {
+    allowedObj[key] = true;
+  });
 
-    const lenList = words.filter((item) => {
-        for (let s of item) {
-            if (!allowedObj[s]) return false;
-        }
-        return true;
-    });
-    return lenList.length;
+  const lenList = words.filter((item) => {
+    for (let s of item) {
+      if (!allowedObj[s]) return false;
+    }
+    return true;
+  });
+  return lenList.length;
 };
 
 console.log(countConsistentStrings("ab", ["ad", "bd", "aaab", "baa", "badab"]));
 
 console.log(
-    countConsistentStrings("abc", ["a", "b", "c", "ab", "ac", "bc", "abc"])
+  countConsistentStrings("abc", ["a", "b", "c", "ab", "ac", "bc", "abc"])
 );
